@@ -13,10 +13,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        let defaults = NSUserDefaults.standardUserDefaults()
+        if defaults.boolForKey(Constants.HasCompletedSetupKey) == false {
+            UIApplication.sharedApplication().cancelAllLocalNotifications()
+            let storyboard = UIStoryboard(name: "Walkthrough", bundle: nil)
+            let vc = storyboard.instantiateInitialViewController()
+            
+            self.window?.rootViewController = vc
+            self.window?.makeKeyAndVisible()
+        }
+        
+        UIApplication.sharedApplication().applicationIconBadgeNumber = 0
         return true
+    }
+    
+    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+        guard let identifier = identifier else {
+            return
+        }
+        
+        let notificationCenter = NSNotificationCenter.defaultCenter()
+        switch identifier {
+        case Constants.SnoozeNotificationIdentifier:
+            notificationCenter.postNotificationName(Constants.SnoozeNotificationIdentifier, object: nil)
+        case Constants.StartDayNotificationIdentifier:
+            notificationCenter.postNotificationName(Constants.StartDayNotificationIdentifier, object: nil)
+        case Constants.FinishedNotificationIdentifier:
+            notificationCenter.postNotificationName(Constants.FinishedNotificationIdentifier, object: nil)
+        default:
+            break
+        }
+        UIApplication.sharedApplication().applicationIconBadgeNumber = 0
+        completionHandler()
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -35,6 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        UIApplication.sharedApplication().applicationIconBadgeNumber = 0
     }
 
     func applicationWillTerminate(application: UIApplication) {

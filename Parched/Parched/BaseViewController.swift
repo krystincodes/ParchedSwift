@@ -13,6 +13,20 @@ class BaseViewController: UIViewController {
     var startTimePicker: UIDatePicker!
     var endTimePicker: UIDatePicker!
     
+    var startTimeString: String {
+        if let startTime = defaultsManager.startTime {
+            return timeStringFromDate(startTime)
+        }
+        return ""
+    }
+    
+    var endTimeString: String {
+        if let endTime = defaultsManager.endTime {
+            return timeStringFromDate(endTime)
+        }
+        return ""
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -101,5 +115,13 @@ class BaseViewController: UIViewController {
     
     func saveUnitOfMesasurement(unit: UnitOfMeasurement?) {
         defaultsManager.unitOfMesaurement = unit
+    }
+    
+    private func timeStringFromDate(date: NSDate) -> String {
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "H:mm a"
+        formatter.AMSymbol = "am"
+        formatter.PMSymbol = "pm"
+        return formatter.stringFromDate(date)
     }
 }

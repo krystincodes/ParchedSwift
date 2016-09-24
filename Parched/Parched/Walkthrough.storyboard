@@ -8,7 +8,7 @@
         <!--Walkthrough View Controller-->
         <scene sceneID="Wpk-e2-bBV">
             <objects>
-                <viewController id="7zK-Um-ogb" customClass="WalkthroughViewController" customModule="Parched" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Walkthrough" id="7zK-Um-ogb" customClass="WalkthroughViewController" customModule="Parched" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Eud-bj-VsW"/>
                         <viewControllerLayoutGuide type="bottom" id="LlX-ua-gTA"/>

@@ -31,6 +31,9 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
     
         startTimeTextField.inputView = startTimePicker
         endTimeTextField.inputView = endTimePicker
+        startTimeTextField.text = startTimeString
+        endTimeTextField.text = endTimeString
+        
         unitOfMeasurementSegmentedControl.selectedSegmentIndex = 0
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
