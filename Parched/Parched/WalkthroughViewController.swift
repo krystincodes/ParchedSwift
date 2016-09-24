@@ -115,7 +115,6 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
             moveLabelsForward()
             break
         case 1:
-            // TODO: This will probably break if empty? Idk might return empty string which would be fine
             if saveDailyAmountIfValid(dailyAmountTextField.text!) {
                 moveLabelsForward()
             }

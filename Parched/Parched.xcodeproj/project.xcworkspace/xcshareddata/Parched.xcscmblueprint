@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "D6332320A850A0DBB4AD929FC72729F2B566FCC7",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6D7A39F56E4C12E1261560EA7D3692214A908FFC" : 0,
+    "D6332320A850A0DBB4AD929FC72729F2B566FCC7" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "2E2D7908-21A6-46CA-AD16-C1AC4809865D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6D7A39F56E4C12E1261560EA7D3692214A908FFC" : "..\/Documents\/Projects\/Parched",
+    "D6332320A850A0DBB4AD929FC72729F2B566FCC7" : "ParchedSwift\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Parched",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Parched\/Parched.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/nitsyrk\/Parched.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6D7A39F56E4C12E1261560EA7D3692214A908FFC"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/krystincodes\/ParchedSwift.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D6332320A850A0DBB4AD929FC72729F2B566FCC7"
+    }
+  ]
+}
