@@ -35,9 +35,64 @@ class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings"), style: .Plain, target: self, action: #selector(showSettings))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(addCustomAmout))
+
+        
+        readInfoFromDefaults()
+        setupNSNotifications()
+        updateProgressBarAndLabel()
+        resetTimer()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+//    - (void)viewWillAppear:(BOOL)animated {
+//    [super viewWillAppear:animated];
+//    [self checkNotificationsEnabled];
+//    
+//    self.timeLeftLabel.text = [self timeFormatted:self.timeForCurrentBottle];
+//    self.scrollView.contentInset = UIEdgeInsetsMake(self.view.frame.size.height, 0, 0, 0);
+//    self.scrollView.contentOffset = CGPointMake(0, -self.view.frame.size.height);
+//    
+//    if (![self hasSeenWalkthrough]) {
+//    [self createCoverView];
+//    } else {
+//    [self setupDailyNotification];
+//    }
+//    }
+    
+    
+    // Timer logic
+    func readInfoFromDefaults() {
+        
+    }
+    
+    func setupNSNotifications() {
+        
+    }
+    
+    func resetTimer() {
+        
+    }
+    
+    func updateProgressBarAndLabel() {
+        
+    }
+    
+    // Actions
+    
+    func showSettings() {
+        
     }
 
+    func addCustomAmout() {
+        
+    }
+    
     @IBAction func finishedEarlyButtonClicked(sender: AnyObject) {
         
     }
