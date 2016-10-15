@@ -10,58 +10,58 @@ import Foundation
 
 class UserDefaultsManager {
     static let sharedInstance = UserDefaultsManager()
-    private var userDefaults: NSUserDefaults!
+    fileprivate var userDefaults: UserDefaults!
     
-    private init() {
-        userDefaults = NSUserDefaults.standardUserDefaults()
+    fileprivate init() {
+        userDefaults = UserDefaults.standard
     }
     
     var dailyAmount: Int {
         set {
-            userDefaults.setInteger(newValue, forKey: Constants.DailyAmountKey)
+            userDefaults.set(newValue, forKey: Constants.DailyAmountKey)
         }
         get {
-            return userDefaults.integerForKey(Constants.DailyAmountKey)
+            return userDefaults.integer(forKey: Constants.DailyAmountKey)
         }
     }
     
     var containerSize: Int {
         set {
-            userDefaults.setInteger(newValue, forKey: Constants.ContainerSizeKey)
+            userDefaults.set(newValue, forKey: Constants.ContainerSizeKey)
         } get {
-            return userDefaults.integerForKey(Constants.ContainerSizeKey)
+            return userDefaults.integer(forKey: Constants.ContainerSizeKey)
         }
     }
     
     var unitOfMesaurement: UnitOfMeasurement? {
         set {
-            userDefaults.setInteger(newValue!.hashValue, forKey: Constants.UnitsKey)
+            userDefaults.set(newValue!.hashValue, forKey: Constants.UnitsKey)
         } get {
-            return UnitOfMeasurement(rawValue: userDefaults.integerForKey(Constants.UnitsKey))
+            return UnitOfMeasurement(rawValue: userDefaults.integer(forKey: Constants.UnitsKey))
         }
     }
     
-    var startTime: NSDate? {
+    var startTime: Date? {
         set {
-            userDefaults.setObject(newValue, forKey: Constants.StartTimeKey)
+            userDefaults.set(newValue, forKey: Constants.StartTimeKey)
         } get {
-            return userDefaults.objectForKey(Constants.StartTimeKey) as? NSDate
+            return userDefaults.object(forKey: Constants.StartTimeKey) as? Date
         }
     }
     
-    var endTime: NSDate? {
+    var endTime: Date? {
         set {
-            userDefaults.setObject(newValue, forKey: Constants.EndTimeKey)
+            userDefaults.set(newValue, forKey: Constants.EndTimeKey)
         } get {
-            return userDefaults.objectForKey(Constants.EndTimeKey) as? NSDate
+            return userDefaults.object(forKey: Constants.EndTimeKey) as? Date
         }
     }
     
     var hasCompletedSetup: Bool {
         set {
-            userDefaults.setBool(newValue, forKey: Constants.HasCompletedSetupKey)
+            userDefaults.set(newValue, forKey: Constants.HasCompletedSetupKey)
         } get {
-            return userDefaults.boolForKey(Constants.HasCompletedSetupKey)
+            return userDefaults.bool(forKey: Constants.HasCompletedSetupKey)
         }
     }
 }

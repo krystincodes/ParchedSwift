@@ -36,8 +36,8 @@ class HomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings"), style: .Plain, target: self, action: #selector(showSettings))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(addCustomAmout))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings"), style: .plain, target: self, action: #selector(showSettings))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCustomAmout))
 
         
         readInfoFromDefaults()
@@ -46,7 +46,7 @@ class HomeViewController: BaseViewController {
         resetTimer()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
     
@@ -93,19 +93,19 @@ class HomeViewController: BaseViewController {
         
     }
     
-    @IBAction func finishedEarlyButtonClicked(sender: AnyObject) {
+    @IBAction func finishedEarlyButtonClicked(_ sender: AnyObject) {
         
     }
     
-    @IBAction func pushNotifSwitchValueChanged(sender: AnyObject) {
+    @IBAction func pushNotifSwitchValueChanged(_ sender: AnyObject) {
         
     }
     
-    @IBAction func startTimeButtonClicked(sender: AnyObject) {
+    @IBAction func startTimeButtonClicked(_ sender: AnyObject) {
         
     }
     
-    @IBAction func endTimeButtonClicked(sender: AnyObject) {
+    @IBAction func endTimeButtonClicked(_ sender: AnyObject) {
         
     }
     

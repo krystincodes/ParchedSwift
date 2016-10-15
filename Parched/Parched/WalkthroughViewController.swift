@@ -35,23 +35,23 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         endTimeTextField.text = endTimeString
         
         unitOfMeasurementSegmentedControl.selectedSegmentIndex = 0
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.descriptionLabel.alpha = 0
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UIView.animateWithDuration(0.3) {
+        UIView.animate(withDuration: 0.3, animations: {
             self.descriptionLabel.alpha = 1;
-        }
+        }) 
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
@@ -63,15 +63,16 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
              proceedButton.titleLabel?.text = "Next"
         }
         descriptionLabelLeadingConstraint.constant -= descriptionLabel.frame.size.width + 40
-        UIView.animateWithDuration(0.3) {
+        UIView.animate(withDuration: 0.3, animations: {
             self.view.layoutIfNeeded()
-        }
+        }) 
     }
     
     // MARK - Keyboard
-    func keyboardWillShow(notification: NSNotification) {
-        if let info = notification.userInfo, keyboardEndY = info[UIKeyboardFrameBeginUserInfoKey]?.CGRectValue().origin.y,
-           duration = info[UIKeyboardAnimationDurationUserInfoKey]?.doubleValue {
+    func keyboardWillShow(_ notification: Notification) {
+        if let info = (notification as NSNotification).userInfo, let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue {
+//            let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue
+            let keyboardEndY = (info[UIKeyboardFrameBeginUserInfoKey] as AnyObject).cgRectValue.origin.y
             let proceedButtonBottom = proceedButton.frame.origin.y + proceedButton.frame.size.height;
             if keyboardEndY > proceedButtonBottom {
                 return
@@ -80,36 +81,36 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
                 amountMovedForKeyboard = needMoveUp
 //                view.layoutIfNeeded()
                 titleViewTopConstraint.constant -= needMoveUp
-                UIView.animateWithDuration(duration) {
+                UIView.animate(withDuration: duration, animations: {
                     self.titleView.alpha = 0
                     self.view.layoutIfNeeded()
-                }
+                }) 
             }
         }
     }
     
-    func keyboardWillHide(notification: NSNotification) {
+    func keyboardWillHide(_ notification: Notification) {
         guard amountMovedForKeyboard != 0  else {
             return
         }
         
-        if let info = notification.userInfo, duration = info[UIKeyboardAnimationDurationUserInfoKey]?.doubleValue {
+        if let info = (notification as NSNotification).userInfo, let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue {
             titleViewTopConstraint.constant += amountMovedForKeyboard
             amountMovedForKeyboard = 0
-            UIView.animateWithDuration(duration) {
+            UIView.animate(withDuration: duration, animations: {
                 self.titleView.alpha = 1
                 self.view.layoutIfNeeded()
-            }
+            }) 
         }
     }
     
     // MARK - Actions
-    @IBAction func unitsSegmentedControlValueChanged(sender: AnyObject) {
+    @IBAction func unitsSegmentedControlValueChanged(_ sender: AnyObject) {
         let control = sender as! UISegmentedControl
         saveUnitOfMesasurement(UnitOfMeasurement(rawValue: control.selectedSegmentIndex))
     }
     
-    @IBAction func proceedButtonClicked(sender: AnyObject) {
+    @IBAction func proceedButtonClicked(_ sender: AnyObject) {
         switch currentSection {
         case 0:
             moveLabelsForward()
@@ -129,7 +130,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
             saveEndTime(endTimePicker.date)
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateInitialViewController()
-            self.presentViewController(vc!, animated: true, completion: { () -> Void in
+            self.present(vc!, animated: true, completion: { () -> Void in
                 self.defaultsManager.hasCompletedSetup = true
             })
         default:
@@ -137,7 +138,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         }
     }
     
-    @IBAction func backgroundTapped(sender: AnyObject) {
+    @IBAction func backgroundTapped(_ sender: AnyObject) {
         self.view.endEditing(true)
     }
 }

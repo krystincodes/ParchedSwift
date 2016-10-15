@@ -15,14 +15,14 @@ class BaseViewController: UIViewController {
     
     var startTimeString: String {
         if let startTime = defaultsManager.startTime {
-            return timeStringFromDate(startTime)
+            return timeStringFromDate(startTime as Date)
         }
         return ""
     }
     
     var endTimeString: String {
         if let endTime = defaultsManager.endTime {
-            return timeStringFromDate(endTime)
+            return timeStringFromDate(endTime as Date)
         }
         return ""
     }
@@ -45,32 +45,32 @@ class BaseViewController: UIViewController {
         
         defaultsManager.unitOfMesaurement = .ounces
         // All we are concerned about is the time of day, not date
-        let calendar = NSCalendar.currentCalendar()
-        let date = NSDate(timeIntervalSince1970: 0)
-        let components = NSDateComponents()
+        let calendar = Calendar.current
+        let date = Date(timeIntervalSince1970: 0)
+        var components = DateComponents()
         components.hour = 7
-        defaultsManager.startTime = calendar.dateByAddingComponents(components, toDate: date, options: [])
+        defaultsManager.startTime = (calendar as NSCalendar).date(byAdding: components, to: date, options: [])
         components.hour = 20
-        defaultsManager.endTime = calendar.dateByAddingComponents(components, toDate: date, options: [])
+        defaultsManager.endTime = (calendar as NSCalendar).date(byAdding: components, to: date, options: [])
     }
     
     func setupPickers() {
-        startTimePicker = UIDatePicker(frame: CGRectZero)
-        startTimePicker.datePickerMode = .Time
-        startTimePicker.maximumDate = defaultsManager.endTime
-        endTimePicker = UIDatePicker(frame: CGRectZero)
-        endTimePicker.datePickerMode = .Time
-        endTimePicker.minimumDate = defaultsManager.startTime
+        startTimePicker = UIDatePicker(frame: CGRect.zero)
+        startTimePicker.datePickerMode = .time
+        startTimePicker.maximumDate = defaultsManager.endTime as Date?
+        endTimePicker = UIDatePicker(frame: CGRect.zero)
+        endTimePicker.datePickerMode = .time
+        endTimePicker.minimumDate = defaultsManager.startTime as Date?
     }
     
-    func showErrorAlert(title: String?, message: String?) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+    func showErrorAlert(_ title: String?, message: String?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
-    func saveDailyAmountIfValid(dailyAmount: String) -> Bool {
-        guard let dailyAmount = Int(dailyAmount) where dailyAmount > 0 else {
+    func saveDailyAmountIfValid(_ dailyAmount: String) -> Bool {
+        guard let dailyAmount = Int(dailyAmount) , dailyAmount > 0 else {
             showErrorAlert("Oops", message: "Your daily amount cannot be 0... That's unhealthy.")
             return false
         }
@@ -89,8 +89,8 @@ class BaseViewController: UIViewController {
         }
     }
     
-    func saveContainerSizeIfValid(containerSize: String) -> Bool {
-        guard let containerSize = Int(containerSize) where containerSize > 0 else {
+    func saveContainerSizeIfValid(_ containerSize: String) -> Bool {
+        guard let containerSize = Int(containerSize) , containerSize > 0 else {
             showErrorAlert("", message: "Container size can't be 0. If you're drinking air, there's probably another app for that.")
             return false
         }
@@ -105,23 +105,23 @@ class BaseViewController: UIViewController {
         }
     }
     
-    func saveStartTime(time: NSDate) {
+    func saveStartTime(_ time: Date) {
         defaultsManager.startTime = time
     }
     
-    func saveEndTime(time: NSDate) {
+    func saveEndTime(_ time: Date) {
         defaultsManager.endTime = time
     }
     
-    func saveUnitOfMesasurement(unit: UnitOfMeasurement?) {
+    func saveUnitOfMesasurement(_ unit: UnitOfMeasurement?) {
         defaultsManager.unitOfMesaurement = unit
     }
     
-    private func timeStringFromDate(date: NSDate) -> String {
-        let formatter = NSDateFormatter()
+    fileprivate func timeStringFromDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
         formatter.dateFormat = "H:mm a"
-        formatter.AMSymbol = "am"
-        formatter.PMSymbol = "pm"
-        return formatter.stringFromDate(date)
+        formatter.amSymbol = "am"
+        formatter.pmSymbol = "pm"
+        return formatter.string(from: date)
     }
 }
