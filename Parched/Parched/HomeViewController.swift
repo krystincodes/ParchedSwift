@@ -85,6 +85,10 @@ class HomeViewController: BaseViewController {
     
     // Actions
     
+    func hideSettings() {
+        
+    }
+    
     func showSettings() {
         
     }

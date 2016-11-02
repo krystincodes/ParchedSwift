@@ -28,7 +28,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         startTimeTextField.inputView = startTimePicker
         endTimeTextField.inputView = endTimePicker
         startTimeTextField.text = startTimeString
@@ -55,6 +55,44 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         return true
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        setupTextFieldBorders()
+    }
+    
+    func setupTextFieldBorders() {
+        let width = CGFloat(1)
+
+        let dailyAmountBorder = CALayer()
+        dailyAmountBorder.borderColor = UIColor.white.cgColor
+        dailyAmountBorder.frame = CGRect(x: 0, y: dailyAmountTextField.frame.size.height - width, width:  dailyAmountTextField.frame.size.width, height: dailyAmountTextField.frame.height)
+        dailyAmountBorder.borderWidth = width
+        dailyAmountTextField.layer.addSublayer(dailyAmountBorder)
+        dailyAmountTextField.layer.masksToBounds = true
+     
+        let containerSizeBorder = CALayer()
+        containerSizeBorder.borderColor = UIColor.white.cgColor
+        containerSizeBorder.frame = CGRect(x: 0, y: containerSizeTextField.frame.size.height - width, width:  containerSizeTextField.frame.size.width, height: containerSizeTextField.frame.height)
+        containerSizeBorder.borderWidth = width
+        containerSizeTextField.layer.addSublayer(containerSizeBorder)
+        containerSizeTextField.layer.masksToBounds = true
+        
+        let startTimeBorder = CALayer()
+        startTimeBorder.borderColor = UIColor.white.cgColor
+        startTimeBorder.frame = CGRect(x: 0, y: startTimeTextField.frame.size.height - width, width:  startTimeTextField.frame.size.width, height: startTimeTextField.frame.height)
+        startTimeBorder.borderWidth = width
+        startTimeTextField.layer.addSublayer(startTimeBorder)
+        startTimeTextField.layer.masksToBounds = true
+        
+        
+        let endTimeBorder = CALayer()
+        endTimeBorder.borderColor = UIColor.white.cgColor
+        endTimeBorder.frame = CGRect(x: 0, y: endTimeTextField.frame.size.height - width, width:  endTimeTextField.frame.size.width, height: endTimeTextField.frame.height)
+        endTimeBorder.borderWidth = width
+        endTimeTextField.layer.addSublayer(endTimeBorder)
+        endTimeTextField.layer.masksToBounds = true
+    }
+    
     func moveLabelsForward() {
         currentSection += 1
         if currentSection == 3 {
@@ -68,7 +106,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         }) 
     }
     
-    // MARK - Keyboard
+    // MARK: Keyboard
     func keyboardWillShow(_ notification: Notification) {
         if let info = (notification as NSNotification).userInfo, let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue {
 //            let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue
@@ -104,7 +142,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         }
     }
     
-    // MARK - Actions
+    // MARK: Actions
     @IBAction func unitsSegmentedControlValueChanged(_ sender: AnyObject) {
         let control = sender as! UISegmentedControl
         saveUnitOfMesasurement(UnitOfMeasurement(rawValue: control.selectedSegmentIndex))
