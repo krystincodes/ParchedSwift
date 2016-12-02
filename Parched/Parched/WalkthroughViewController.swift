@@ -57,7 +57,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setupTextFieldBorders()
+        proceedButton.layer.cornerRadius = proceedButton.frame.height / 3.5
     }
     
     func setupTextFieldBorders() {

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeViewController: BaseViewController {
+class HomeViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var timeLeftLabel: UILabel!
     @IBOutlet weak var nextRefillLabel: UILabel!
@@ -32,69 +32,119 @@ class HomeViewController: BaseViewController {
     @IBOutlet weak var progressBarContainerView: UIView!
     @IBOutlet weak var progressBarView: UIView!
     @IBOutlet weak var progressBarRightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var timePicker: UIDatePicker!
+    @IBOutlet weak var timePickerBottomConstraint: NSLayoutConstraint!
+    
+    private let viewModel = MainViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if !viewModel.hasSetupDefaults {
+            showSettings()
+        } else {
+            hideSettings()
+        }
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings"), style: .plain, target: self, action: #selector(showSettings))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCustomAmout))
-
-        
-        readInfoFromDefaults()
+        timePicker.addTarget(self, action: #selector(timePickerChanged), for: .valueChanged)
         setupNSNotifications()
+        updateAllInfo()
+//        addRegularViewButtons()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        //        if viewModel.hasSetupDefaults {
+        
+        //        }
+//        scrollView.contentInset = UIEdgeInsetsMake(view.frame.size.height, 0, 0, 0);
+    }
+    
+    @IBAction func dailyAmountValueChanged(_ sender: Any) {
+        guard let textField = sender as? UITextField, let text = textField.text else {
+            return
+        }
+        viewModel.dailyAmount = Int(text)!
+    }
+    
+    // MARK: Private functions
+    private func addSettingsViewButtons() {
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(hideSettings))
+    }
+    
+    private func addRegularViewButtons() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(showSettings))
+//        (image: UIImage(named: "settings"), style: .plain, target: self, action: )
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCustomAmount))
+    }
+    
+    private func updateAllInfo() {
+        populateSettingsFromViewModel()
         updateProgressBarAndLabel()
         resetTimer()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
-//    - (void)viewWillAppear:(BOOL)animated {
-//    [super viewWillAppear:animated];
-//    [self checkNotificationsEnabled];
-//    
-//    self.timeLeftLabel.text = [self timeFormatted:self.timeForCurrentBottle];
-//    self.scrollView.contentInset = UIEdgeInsetsMake(self.view.frame.size.height, 0, 0, 0);
-//    self.scrollView.contentOffset = CGPointMake(0, -self.view.frame.size.height);
-//    
-//    if (![self hasSeenWalkthrough]) {
-//    [self createCoverView];
-//    } else {
-//    [self setupDailyNotification];
-//    }
+//    private func setupPickerViewForSettings() {
+//        let doneButtonView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 45))
+//        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneWithPickerTapped()))
+//        timePicker.inputView = doneButtonView
 //    }
     
+    private func populateSettingsFromViewModel() {
+        dailyAmountTextField.text = String(viewModel.dailyAmount)
+        containerSizeTextField.text = String(viewModel.containerSize)
+        startTimeButton.titleLabel?.text = viewModel.startTimeString
+        endTimeButton.titleLabel?.text = viewModel.startTimeString
+        unitOfMeasurementSegmentedControl.selectedSegmentIndex = viewModel.unitOfMesaurement
+    }
     
-    // Timer logic
-    func readInfoFromDefaults() {
+    @objc private func doneWithPickerTapped() {
         
     }
     
-    func setupNSNotifications() {
+    private func setupNSNotifications() {
         
     }
     
-    func resetTimer() {
+    private func resetTimer() {
         
     }
     
-    func updateProgressBarAndLabel() {
+    private func updateProgressBarAndLabel() {
         
     }
     
-    // Actions
+    // MARK: Actions & Selectors
     
-    func hideSettings() {
-        
+    @objc private func hideSettings() {
+        // TODO: Might need some validation/error throwing here
+    
+        addRegularViewButtons()
+        scrollView.contentInset = UIEdgeInsetsMake(view.frame.height, 0, 0, 0);
     }
     
-    func showSettings() {
+    @objc private func showSettings() {
+        populateSettingsFromViewModel()
+        addSettingsViewButtons()
+        // TODO: Animate
+        scrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
         
     }
 
-    func addCustomAmout() {
+    @objc private func addCustomAmount() {
         
+    }
+    
+    @objc private func timePickerChanged() {
+        if startTimePickerIsShowing {
+            viewModel.startTime = timePicker.date
+            startTimeButton.titleLabel?.text = viewModel.startTimeString
+            // TODO Update time for start day notification
+        } else if endTimePickerIsShowing {
+            viewModel.endTime = timePicker.date
+            endTimeButton.titleLabel?.text = viewModel.endTimeString
+            // TODO If they changed the end time in the middle of a day, we need to redo our math
+        }
     }
     
     @IBAction func finishedEarlyButtonClicked(_ sender: AnyObject) {
@@ -102,16 +152,64 @@ class HomeViewController: BaseViewController {
     }
     
     @IBAction func pushNotifSwitchValueChanged(_ sender: AnyObject) {
-        
+        // Open settings OR ask for permission
     }
     
+    private var startTimePickerIsShowing = false
     @IBAction func startTimeButtonClicked(_ sender: AnyObject) {
-        
+        view.endEditing(true)
+        if startTimePickerIsShowing {
+            hidePicker()
+        } else {
+            showPicker()
+            if viewModel.startTime == nil {
+                viewModel.startTime = timePicker.date
+                startTimeButton.titleLabel?.text = viewModel.startTimeString
+            }
+        }
+        endTimePickerIsShowing = !endTimePickerIsShowing
+        startTimePickerIsShowing = !startTimePickerIsShowing
     }
     
+    private var endTimePickerIsShowing = false
     @IBAction func endTimeButtonClicked(_ sender: AnyObject) {
-        
+        view.endEditing(true)
+        if endTimePickerIsShowing {
+            hidePicker()
+        } else {
+            showPicker()
+            if viewModel.endTime == nil {
+                viewModel.endTime = timePicker.date
+                endTimeButton.titleLabel?.text = viewModel.endTimeString
+            }
+        }
+        endTimePickerIsShowing = !endTimePickerIsShowing
+        startTimePickerIsShowing = !startTimePickerIsShowing
     }
     
+    private func hidePicker() {
+        view.endEditing(true)
+        self.timePickerBottomConstraint.constant = -self.timePicker.frame.height
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func showPicker() {
+        view.endEditing(true)
+        self.timePickerBottomConstraint.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    @IBAction func backgroundTapped(_ sender: Any) {
+        if endTimePickerIsShowing || startTimePickerIsShowing {
+            hidePicker()
+        } else {
+            view.endEditing(true)
+        }
+    }
+
 }
 

@@ -4,14 +4,24 @@
 
 import Foundation
 
-class UserDefaultsManager {
-    static let sharedInstance = UserDefaultsManager()
-    fileprivate var userDefaults: UserDefaults!
+class SettingsViewModel {
+    fileprivate let userDefaults = UserDefaults()
     
-    fileprivate init() {
-        userDefaults = UserDefaults.standard
+    var hasSetupDefaults: Bool {
+        return endTime != nil && startTime != nil
     }
     
+    var startTimeString: String {
+        return startTime?.timeString ?? "Add"
+    }
+    
+    var endTimeString: String {
+        return endTime?.timeString ?? "Add"
+    }
+}
+
+// MARK: Properties (stored in defaults)
+extension SettingsViewModel {
     var dailyAmount: Int {
         set {
             userDefaults.set(newValue, forKey: Constants.DailyAmountKey)
@@ -29,11 +39,11 @@ class UserDefaultsManager {
         }
     }
     
-    var unitOfMesaurement: UnitOfMeasurement? {
+    var unitOfMesaurement: Int {
         set {
-            userDefaults.set(newValue!.hashValue, forKey: Constants.UnitsKey)
+            userDefaults.set(newValue, forKey: Constants.UnitsKey)
         } get {
-            return UnitOfMeasurement(rawValue: userDefaults.integer(forKey: Constants.UnitsKey))
+            return userDefaults.integer(forKey: Constants.UnitsKey)
         }
     }
     
@@ -52,18 +62,4 @@ class UserDefaultsManager {
             return userDefaults.object(forKey: Constants.EndTimeKey) as? Date
         }
     }
-    
-    var hasCompletedSetup: Bool {
-        set {
-            userDefaults.set(newValue, forKey: Constants.HasCompletedSetupKey)
-        } get {
-            return userDefaults.bool(forKey: Constants.HasCompletedSetupKey)
-        }
-    }
-}
-
-// TODO: Maybe not the best place for this?
-enum UnitOfMeasurement: Int {
-    case ounces = 0
-    case mililiters = 1
 }
