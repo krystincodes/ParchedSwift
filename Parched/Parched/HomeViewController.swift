@@ -35,10 +35,13 @@ class HomeViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var timePicker: UIDatePicker!
     @IBOutlet weak var timePickerBottomConstraint: NSLayoutConstraint!
     
-    private let viewModel = MainViewModel()
+    private let viewModel = MainViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let settingsViewModel = SettingsViewModel()
+        viewModel = MainViewModel(settingsViewModel: settingsViewModel)
+        
         if !viewModel.hasSetupDefaults {
             showSettings()
         } else {
@@ -90,6 +93,7 @@ class HomeViewController: UIViewController, UITextFieldDelegate {
 //        timePicker.inputView = doneButtonView
 //    }
     
+    // TODO: Observables
     private func populateSettingsFromViewModel() {
         dailyAmountTextField.text = String(viewModel.dailyAmount)
         containerSizeTextField.text = String(viewModel.containerSize)
@@ -114,7 +118,14 @@ class HomeViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-    // MARK: Actions & Selectors
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
+        alert.addAction(okAction)
+        self.navigationController?.present(alert, animated: true, completion: nil)
+    }
+
+    // MARK: Actions & Selectors=
     
     @objc private func hideSettings() {
         // TODO: Might need some validation/error throwing here
@@ -137,14 +148,30 @@ class HomeViewController: UIViewController, UITextFieldDelegate {
     
     @objc private func timePickerChanged() {
         if startTimePickerIsShowing {
-            viewModel.startTime = timePicker.date
-            startTimeButton.titleLabel?.text = viewModel.startTimeString
-            // TODO Update time for start day notification
+            update(startTime: timePicker.date)
+            // TODO: Update time for start day notification
         } else if endTimePickerIsShowing {
-            viewModel.endTime = timePicker.date
-            endTimeButton.titleLabel?.text = viewModel.endTimeString
-            // TODO If they changed the end time in the middle of a day, we need to redo our math
+            updateEndTimeIfValid(endTime: timePicker.date)
+            // TODO: If they changed the end time in the middle of a day, we need to redo our math
         }
+    }
+    
+    private func update(startTime: Date) {
+        if let endTime = viewModel.endTime, endTime < startTime {
+            viewModel.endTime = Date(timeInterval: 3600 * 8, since: startTime)
+        }
+        viewModel.startTime = startTime
+        startTimeButton.titleLabel?.text = viewModel.startTimeString
+    }
+    
+    // TODO: Logic like this probably shouldn't be in the ViewController ^
+    private func updateEndTimeIfValid(endTime: Date) {
+        guard let startTime = viewModel.startTime, startTime < endTime else {
+            showAlert(title: "Whoops", message: "End time cannot be before start time. Please try again.")
+            return
+        }
+        viewModel.endTime = endTime
+        endTimeButton.titleLabel?.text = viewModel.endTimeString
     }
     
     @IBAction func finishedEarlyButtonClicked(_ sender: AnyObject) {

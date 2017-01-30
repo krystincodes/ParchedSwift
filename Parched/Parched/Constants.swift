@@ -1,12 +1,6 @@
 //
-//  Constants.swift
-//  Parched
-//
-//  Created by Krystin Stutesman on 9/17/16.
 //  Copyright © 2016 Krystin Stutesman. All rights reserved.
 //
-
-import Foundation
 
 struct Constants {
     static let UnitsKey = "Units"

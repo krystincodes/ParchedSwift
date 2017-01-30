@@ -5,18 +5,23 @@
 import Foundation
 
 class MainViewModel {
-    fileprivate let userDefaults = UserDefaults()
+    private var settingsViewModel: SettingsViewModel
     
     var hasSetupDefaults: Bool {
-        return endTime != nil && startTime != nil
+        return settingsViewModel.hasSetupDefaults
     }
 
     var startTimeString: String {
-        return startTime?.timeString ?? "Add"
+        return settingsViewModel.startTime?.timeString ?? "Add"
     }
     
     var endTimeString: String {
-        return endTime?.timeString ?? "Add"
+        return settingsViewModel.endTime?.timeString ?? "Add"
+    }
+    
+    
+    public init(settingsViewModel: SettingsViewModel) {
+        self.settingsViewModel = settingsViewModel
     }
     
     // MARK: UserDefaults methods
@@ -35,48 +40,4 @@ class MainViewModel {
 //            return false
 //        }
 //    }
-}
-
-// MARK: Properties stored in defaults
-extension MainViewModel {
-    var dailyAmount: Int {
-        set {
-            userDefaults.set(newValue, forKey: Constants.DailyAmountKey)
-        }
-        get {
-            return userDefaults.integer(forKey: Constants.DailyAmountKey)
-        }
-    }
-    
-    var containerSize: Int {
-        set {
-            userDefaults.set(newValue, forKey: Constants.ContainerSizeKey)
-        } get {
-            return userDefaults.integer(forKey: Constants.ContainerSizeKey)
-        }
-    }
-    
-    var unitOfMesaurement: Int {
-        set {
-            userDefaults.set(newValue, forKey: Constants.UnitsKey)
-        } get {
-            return userDefaults.integer(forKey: Constants.UnitsKey)
-        }
-    }
-    
-    var startTime: Date? {
-        set {
-            userDefaults.set(newValue, forKey: Constants.StartTimeKey)
-        } get {
-            return userDefaults.object(forKey: Constants.StartTimeKey) as? Date
-        }
-    }
-    
-    var endTime: Date? {
-        set {
-            userDefaults.set(newValue, forKey: Constants.EndTimeKey)
-        } get {
-            return userDefaults.object(forKey: Constants.EndTimeKey) as? Date
-        }
-    }
 }
