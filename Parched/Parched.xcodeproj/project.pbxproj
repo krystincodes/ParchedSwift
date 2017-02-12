@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		235192C31E51067300F14A1C /* SettingsTableViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 235192C21E51067300F14A1C /* SettingsTableViewCells.swift */; };
 		23534A7B1DCFD490007D7617 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23534A7A1DCFD490007D7617 /* MainViewModel.swift */; };
 		237A87F11E3EA9F40047BABF /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237A87F01E3EA9F40047BABF /* SettingsViewController.swift */; };
 		23DF601E1DF1F0F600C9A3EE /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DF601D1DF1F0F600C9A3EE /* SettingsViewModel.swift */; };
@@ -45,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		235192C21E51067300F14A1C /* SettingsTableViewCells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCells.swift; sourceTree = "<group>"; };
 		23534A7A1DCFD490007D7617 /* MainViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		237A87F01E3EA9F40047BABF /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		23DF601D1DF1F0F600C9A3EE /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				23F7865C1D8E1EAB009AF670 /* BaseViewController.swift */,
 				23F786611D8E2915009AF670 /* WalkthroughViewController.swift */,
 				237A87F01E3EA9F40047BABF /* SettingsViewController.swift */,
+				235192C21E51067300F14A1C /* SettingsTableViewCells.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 			files = (
 				23534A7B1DCFD490007D7617 /* MainViewModel.swift in Sources */,
 				23F7865D1D8E1EAB009AF670 /* BaseViewController.swift in Sources */,
+				235192C31E51067300F14A1C /* SettingsTableViewCells.swift in Sources */,
 				237A87F11E3EA9F40047BABF /* SettingsViewController.swift in Sources */,
 				23F7862B1D8DFC32009AF670 /* HomeViewController.swift in Sources */,
 				23F786291D8DFC32009AF670 /* AppDelegate.swift in Sources */,

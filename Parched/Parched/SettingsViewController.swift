@@ -4,6 +4,24 @@
 
 import UIKit
 
+// MARK: Delegates for tableViewCells
+protocol AmountCellDelegate: class {
+    func amountUpdated(amount: Int, type: CellType)
+}
+
+protocol TimeCellDelegate: class {
+    func timeButtonTapped(type: CellType)
+    func timeChanged(time: Date, type: CellType)
+}
+
+protocol UnitsCellDelegate: class {
+    func unitsChanged(value: Int)
+}
+
+protocol SwitchCellDelegate: class {
+    func switchValueChanged(value: Bool)
+}
+
 final class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     
@@ -14,10 +32,6 @@ final class SettingsViewController: UIViewController, UITableViewDelegate, UITab
 }
 
 extension SettingsViewController {
-    private enum CellType {
-        case containerSize, dailyGoal, startTime, endTime, units, pushNotification
-    }
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
