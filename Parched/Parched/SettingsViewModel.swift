@@ -12,22 +12,22 @@ class SettingsViewModel {
     }
     
     public init() {
-        _dailyAmount = userDefaults.integer(forKey: Constants.DailyAmountKey)
+        _dailyGoal = userDefaults.integer(forKey: Constants.DailyGoalKey)
         _containerSize = userDefaults.integer(forKey: Constants.ContainerSizeKey)
         _unitOfMeasurement = userDefaults.integer(forKey: Constants.UnitsKey)
         _startTime = userDefaults.object(forKey: Constants.StartTimeKey) as? Date
         _endTime = userDefaults.object(forKey: Constants.EndTimeKey) as? Date
     }
     
-    private var _dailyAmount: Int
-    var dailyAmount: Int {
+    private var _dailyGoal: Int
+    var dailyGoal: Int {
         set {
-            _dailyAmount = newValue
-            userDefaults.set(newValue, forKey: Constants.DailyAmountKey)
+            _dailyGoal = newValue
+            userDefaults.set(newValue, forKey: Constants.DailyGoalKey)
         }
-        get { return _dailyAmount }
+        get { return _dailyGoal }
     }
-    
+
     private var _containerSize: Int
     var containerSize: Int {
         set {

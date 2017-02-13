@@ -6,7 +6,7 @@ struct Constants {
     static let UnitsKey = "Units"
     static let StartTimeKey = "StartTime"
     static let EndTimeKey = "EndTime"
-    static let DailyAmountKey = "DailyAmount"
+    static let DailyGoalKey = "DailyGoal"
     static let ContainerSizeKey = "ContainerSize"
     static let StartedDayKey = "StartedDay"
     static let DrankTodayKey = "DrankToday"

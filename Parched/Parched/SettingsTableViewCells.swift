@@ -4,7 +4,7 @@
 
 import UIKit
 
-enum CellType {
+enum CellType: Int {
     case containerSize, dailyGoal, startTime, endTime, units, pushSettings
 }
 

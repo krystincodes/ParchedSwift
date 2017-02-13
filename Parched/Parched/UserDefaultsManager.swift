@@ -14,10 +14,10 @@ class UserDefaultsManager {
     
     var dailyAmount: Int {
         set {
-            userDefaults.set(newValue, forKey: Constants.DailyAmountKey)
+            userDefaults.set(newValue, forKey: Constants.DailyGoalKey)
         }
         get {
-            return userDefaults.integer(forKey: Constants.DailyAmountKey)
+            return userDefaults.integer(forKey: Constants.DailyGoalKey)
         }
     }
     
