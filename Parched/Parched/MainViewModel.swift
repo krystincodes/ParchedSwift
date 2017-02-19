@@ -5,7 +5,7 @@
 import Foundation
 
 class MainViewModel {
-    private var settingsViewModel: SettingsViewModel
+    var settingsViewModel: SettingsViewModel
     
     var hasSetupDefaults: Bool {
         return settingsViewModel.hasSetupDefaults

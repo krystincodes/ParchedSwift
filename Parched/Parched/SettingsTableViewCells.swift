@@ -27,56 +27,74 @@ extension CellType {
     }
 }
 
-final class AmountTableViewCell: UITableViewCell, UITextFieldDelegate {
-    
+class BaseSettingsCell: UITableViewCell {
     @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var textField: UITextField!
-    @IBOutlet weak var unitsLabel: UILabel!
-    
-    var delegate: AmountCellDelegate?
     var type: CellType? {
         didSet {
             label.text = type?.titleString()
         }
     }
+    
+    func initWith(type: CellType, viewModel: SettingsViewModel) {
+        // REQUIRED OVERRIDE
+    }
+}
+
+final class TextFieldTableViewCell: BaseSettingsCell, UITextFieldDelegate {
+    
+    @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var unitsLabel: UILabel!
+    
+    var delegate: TextFieldCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         textField.delegate = self
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        delegate = nil
+    }
 
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        guard let type = type else { return }
+        delegate?.didBeginEditing(type: type)
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let type = type,
-            let text = textField.text,
-            let amount = Int(text) else {
+            let text = textField.text else {
             return
         }
         
-        delegate?.amountUpdated(amount: amount, type: type)
-    }
-}
-
-final class TimeTableViewCell: UITableViewCell {
-    
-    @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var timeButton: UIButton!
-    
-    @IBAction func timeButtonTapped(_ sender: Any) {
-        guard let type = type else { return }
-        delegate?.timeButtonTapped(type: type)
+        if type == .containerSize || type == .dailyGoal {
+            guard let amount = Int(text) else {
+                return
+            }
+            delegate?.valueChanged(amount: amount, type: type)
+        }
     }
     
-    var delegate: TimeCellDelegate?
-    var type: CellType? {
-        didSet {
-            label.text = type?.titleString()
+    override func initWith(type: CellType, viewModel: SettingsViewModel) {
+        self.type = type
+        switch type {
+        case .containerSize, .dailyGoal:
+            unitsLabel.text = viewModel.unitOfMesaurementString
+        case .startTime:
+            textField.text = viewModel.startTimeString
+            unitsLabel.text = viewModel.startTimePeriod
+        case .endTime:
+            textField.text = viewModel.endTimeString
+            unitsLabel.text = viewModel.endTimePeriod
+        default:
+            break
         }
     }
 }
 
-final class UnitsTableViewCell: UITableViewCell {
+final class UnitsTableViewCell: BaseSettingsCell {
     
-    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     @IBAction func segmentedControlValueChanged(_ sender: Any) {
@@ -84,16 +102,14 @@ final class UnitsTableViewCell: UITableViewCell {
     }
     
     var delegate: UnitsCellDelegate?
-    var type: CellType? {
-        didSet {
-            label.text = type?.titleString()
-        }
+    
+    override func initWith(type: CellType, viewModel: SettingsViewModel) {
+        segmentedControl.selectedSegmentIndex = viewModel.unitOfMesaurement
     }
 }
 
-final class SwitchTableViewCell: UITableViewCell {
+final class SwitchTableViewCell: BaseSettingsCell {
     
-    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var pushNotificationsSwitch: UISwitch!
     
     @IBAction func switchValueChanged(_ sender: Any) {
@@ -101,9 +117,8 @@ final class SwitchTableViewCell: UITableViewCell {
     }
     
     var delegate: SwitchCellDelegate?
-    var type: CellType? {
-        didSet {
-            label.text = type?.titleString()
-        }
+    
+    override func initWith(type: CellType, viewModel: SettingsViewModel) {
+        pushNotificationsSwitch.isOn = viewModel.hasEnabledPushes
     }
 }

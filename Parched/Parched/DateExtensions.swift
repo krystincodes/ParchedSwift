@@ -10,9 +10,17 @@ extension Date {
             return nil
         }
         let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        formatter.amSymbol = "am"
-        formatter.pmSymbol = "pm"
+        formatter.dateFormat = "h:mm"
         return formatter.string(from: self)
     }
+    
+    var periodString: String? {
+        guard case self = self else {
+            return nil
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "a"
+        return formatter.string(from: self)
+    }
+
 }
