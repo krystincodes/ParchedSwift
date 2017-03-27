@@ -79,7 +79,11 @@ final class TextFieldTableViewCell: BaseSettingsCell, UITextFieldDelegate {
     override func initWith(type: CellType, viewModel: SettingsViewModel) {
         self.type = type
         switch type {
-        case .containerSize, .dailyGoal:
+        case .containerSize:
+            textField.text = String(viewModel.containerSize)
+            unitsLabel.text = viewModel.unitOfMesaurementString
+        case .dailyGoal:
+            textField.text = String(viewModel.dailyGoal)
             unitsLabel.text = viewModel.unitOfMesaurementString
         case .startTime:
             textField.text = viewModel.startTimeString

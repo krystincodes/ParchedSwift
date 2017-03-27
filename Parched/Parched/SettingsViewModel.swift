@@ -34,6 +34,9 @@ class SettingsViewModel {
         return endTime != nil && startTime != nil
     }
     
+    public let errorNotification = Notification(name: .init("com.parched.app.error"))
+    public let messageKey = "message"
+    
     public init() {
         _dailyGoal = userDefaults.integer(forKey: Constants.DailyGoalKey)
         _containerSize = userDefaults.integer(forKey: Constants.ContainerSizeKey)
@@ -45,6 +48,12 @@ class SettingsViewModel {
     private var _dailyGoal: Int
     var dailyGoal: Int {
         set {
+            let maxValue = Bool(_unitOfMeasurement as NSNumber) ? 250 : 2500
+            guard newValue < maxValue else {
+                let info = [self.messageKey: "That is far too high of a daily goal. Please try again."]
+                NotificationCenter.default.post(Notification(name: errorNotification.name, object: nil, userInfo: info))
+                return
+            }
             _dailyGoal = newValue
             userDefaults.set(newValue, forKey: Constants.DailyGoalKey)
         }
@@ -54,7 +63,11 @@ class SettingsViewModel {
     private var _containerSize: Int
     var containerSize: Int {
         set {
-            
+            guard newValue < _dailyGoal else {
+                let info = [self.messageKey: "Your container is larger than your daily goal. Please try again."]
+                NotificationCenter.default.post(Notification(name: errorNotification.name, object: nil, userInfo: info))
+                return
+            }
             _containerSize = newValue
             userDefaults.set(newValue, forKey: Constants.ContainerSizeKey)
         } get { return _containerSize }
@@ -74,6 +87,8 @@ class SettingsViewModel {
             if let endTime = _endTime, let startTime = newValue, endTime < startTime {
                 self.endTime = Date(timeInterval: 3600 * 8, since: startTime)
             }
+            // TODO: Update time for start day notification
+
             _startTime = newValue
             userDefaults.set(newValue, forKey: Constants.StartTimeKey)
         } get { return _startTime }
@@ -83,9 +98,12 @@ class SettingsViewModel {
     var endTime: Date? {
         set {
             guard let startTime = _startTime, let endTime = newValue, startTime < endTime else {
-                // TODO: showAlert(title: "Whoops", message: "End time cannot be before start time. Please try again.")
+                let info = [self.messageKey: "End time cannot be before start time. Please try again."]
+                NotificationCenter.default.post(Notification(name: errorNotification.name, object: nil, userInfo: info))
                 return
             }
+            // TODO: If they changed the end time in the middle of a day, we need to redo our math
+
             _endTime = newValue
             userDefaults.set(newValue, forKey: Constants.EndTimeKey)
         } get { return _endTime }

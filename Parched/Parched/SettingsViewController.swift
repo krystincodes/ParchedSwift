@@ -23,16 +23,23 @@ protocol SwitchCellDelegate: class {
 }
 
 final class SettingsViewController: UIViewController {
-    @IBOutlet weak var timePicker: UIDatePicker!
-    @IBOutlet weak var timePickeHiddenBottomConstraint: NSLayoutConstraint!
-    @IBOutlet weak var timePickerShowingBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var tableView: UITableView!
 
     var viewModel: SettingsViewModel?
     var showingInputForCellType: CellType?
+    var shouldShowInputForCellType: CellType?
+    var timePicker: UIDatePicker?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Settings"
+        timePicker = UIDatePicker()
+        timePicker?.datePickerMode = .time
+        timePicker?.addTarget(self, action: #selector(timePickerChanged), for: .valueChanged)
+        
+        if let name = viewModel?.errorNotification.name {
+            NotificationCenter.default.addObserver(self, selector: #selector(SettingsViewController.errorReceived(notification:)), name: name, object: nil)
+        }
     }
     
     private func showAlert(title: String, message: String) {
@@ -42,19 +49,31 @@ final class SettingsViewController: UIViewController {
         self.navigationController?.present(alert, animated: true, completion: nil)
     }
     
-    @IBAction func toolbarDoneButtonTapped(_ sender: Any) {
-        // reload cell for start or end time
-        
+    @objc private func errorReceived(notification: Notification) {
+        if let info = notification.userInfo as? [String: Any],
+            let viewModel = viewModel,
+            let message = info[viewModel.messageKey] as? String {
+            showAlert(title: "Oops", message: message)
+        }
     }
     
     @objc private func timePickerChanged() {
         if showingInputForCellType == .startTime {
-            viewModel?.startTime = timePicker.date
-            // TODO: Update time for start day notification
+            viewModel?.startTime = timePicker?.date
         } else {
-            viewModel?.startTime = timePicker.date
-            // TODO: If they changed the end time in the middle of a day, we need to redo our math
+            viewModel?.endTime = timePicker?.date
         }
+        if let row = showingInputForCellType?.rawValue {
+            tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
+        }
+    }
+    
+    @IBAction func doneButtonTapped(_ sender: Any) {
+        
+    }
+
+    @IBAction func backgroundTapped(_ sender: Any) {
+        self.view.resignFirstResponder()
     }
 }
 
@@ -79,6 +98,19 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "textFieldCell") as! TextFieldTableViewCell
             cell.initWith(type: cellType, viewModel: viewModel)
             cell.delegate = self
+            
+            // TODO: Get next button working properly
+//            cell.textField.inputAccessoryView = getToolbarForInputCell(cellType)
+            if cellType == .startTime || cellType == .endTime {
+                cell.textField.inputView = timePicker
+            } else {
+                cell.textField.keyboardType = .numberPad
+            }
+            
+            if shouldShowInputForCellType == cellType {
+                cell.textField.becomeFirstResponder()
+            }
+            
             return cell
         case .units:
             let cell = tableView.dequeueReusableCell(withIdentifier: "unitsCell") as! UnitsTableViewCell
@@ -92,24 +124,50 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
     }
+    
+    private func getToolbarForInputCell(_ type: CellType) -> UIToolbar {
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 44))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        
+        if type == .endTime {
+            let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneWithPickerTapped))
+            toolbar.items = [flexSpace, doneButton]
+            return toolbar
+        }
+        
+        let nextButton = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(nextTapped))
+        toolbar.items = [flexSpace, nextButton]
+        return toolbar
+    }
+
+    @objc private func doneWithPickerTapped() {
+        guard let type = showingInputForCellType, type == .endTime else { return }
+        shouldShowInputForCellType = nil
+        view.endEditing(true)
+        let indexPath = IndexPath(row: type.rawValue, section: 0)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+    
+    @objc private func nextTapped() {
+        guard let row = showingInputForCellType?.rawValue else { return }
+        let nextRow = row + 1
+        shouldShowInputForCellType = CellType(rawValue: nextRow)
+        let currentIndex = IndexPath(row: row, section: 0)
+        let nextIndex = IndexPath(row: nextRow, section: 0)
+        tableView.reloadRows(at: [currentIndex, nextIndex], with: .automatic)
+    }
 }
 
 // MARK: UITableViewCellDelegates
 extension SettingsViewController: TextFieldCellDelegate, UnitsCellDelegate, SwitchCellDelegate {
-    
     internal func didBeginEditing(type: CellType) {
         showingInputForCellType = type
-        if type == .startTime || type == .endTime {
-            timePickerShowingBottomConstraint.isActive = true
-            timePickerShowingBottomConstraint.isActive = false
-            UIView.animate(withDuration: 1.0) {
-                self.view.layoutIfNeeded()
-            }
+        if let startTime = viewModel?.startTime, let endTime = viewModel?.endTime {
+            timePicker?.date = (type == .startTime) ? startTime : endTime
         }
     }
-    
+
     internal func valueChanged(amount: Int, type: CellType) {
-        showingInputForCellType = nil
         if type == .containerSize {
             viewModel?.containerSize = amount
         } else if type == .dailyGoal {
@@ -119,6 +177,9 @@ extension SettingsViewController: TextFieldCellDelegate, UnitsCellDelegate, Swit
 
     internal func unitsChanged(value: Int) {
         viewModel?.unitOfMesaurement = value
+        let containerSizeIndex = IndexPath(row: CellType.containerSize.rawValue, section: 0)
+        let dailyGoalIndex = IndexPath(row: CellType.dailyGoal.rawValue, section: 0)
+        tableView.reloadRows(at: [containerSizeIndex, dailyGoalIndex], with: .automatic)
     }
     
     func switchValueChanged(value: Bool) {
