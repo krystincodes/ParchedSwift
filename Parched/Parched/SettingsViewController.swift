@@ -22,7 +22,7 @@ protocol SwitchCellDelegate: class {
     func switchValueChanged(value: Bool)
 }
 
-final class SettingsViewController: UIViewController {
+final class SettingsViewController: BaseViewController {
     @IBOutlet weak var tableView: UITableView!
 
     var viewModel: SettingsViewModel?
@@ -36,35 +36,25 @@ final class SettingsViewController: UIViewController {
         timePicker = UIDatePicker()
         timePicker?.datePickerMode = .time
         timePicker?.addTarget(self, action: #selector(timePickerChanged), for: .valueChanged)
-        
-        if let name = viewModel?.errorNotification.name {
-            NotificationCenter.default.addObserver(self, selector: #selector(SettingsViewController.errorReceived(notification:)), name: name, object: nil)
-        }
     }
     
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
-        alert.addAction(okAction)
-        self.navigationController?.present(alert, animated: true, completion: nil)
-    }
-    
-    @objc private func errorReceived(notification: Notification) {
-        if let info = notification.userInfo as? [String: Any],
-            let viewModel = viewModel,
-            let message = info[viewModel.messageKey] as? String {
-            showAlert(title: "Oops", message: message)
-        }
-    }
-    
+//    fileprivate func showAlert(title: String, message: String) {
+//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        let okAction = UIAlertAction(title: "Okay", style: .cancel, handler: nil)
+//        alert.addAction(okAction)
+//        self.navigationController?.present(alert, animated: true, completion: nil)
+//    }
+
     @objc private func timePickerChanged() {
+        guard let date = timePicker?.date else { return }
         if showingInputForCellType == .startTime {
-            viewModel?.startTime = timePicker?.date
+            viewModel?.startTime = date
         } else {
-            viewModel?.endTime = timePicker?.date
-        }
-        if let row = showingInputForCellType?.rawValue {
-            tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
+            viewModel?.setEndTime(date) { (errorString) in
+                if let error = errorString {
+                    self.showErrorAlert("Oops", message: error)
+                }
+            }
         }
     }
     
@@ -142,6 +132,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
 
     @objc private func doneWithPickerTapped() {
         guard let type = showingInputForCellType, type == .endTime else { return }
+        
         shouldShowInputForCellType = nil
         view.endEditing(true)
         let indexPath = IndexPath(row: type.rawValue, section: 0)
@@ -150,6 +141,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     
     @objc private func nextTapped() {
         guard let row = showingInputForCellType?.rawValue else { return }
+        
         let nextRow = row + 1
         shouldShowInputForCellType = CellType(rawValue: nextRow)
         let currentIndex = IndexPath(row: row, section: 0)
@@ -169,9 +161,17 @@ extension SettingsViewController: TextFieldCellDelegate, UnitsCellDelegate, Swit
 
     internal func valueChanged(amount: Int, type: CellType) {
         if type == .containerSize {
-            viewModel?.containerSize = amount
+            viewModel?.setContainerSize(amount) { (errorString) in
+                if let errorString = errorString {
+                    self.showErrorAlert("Oops", message: errorString)
+                }
+            }
         } else if type == .dailyGoal {
-            viewModel?.dailyGoal = amount
+            viewModel?.setDailyGoal(amount) { (errorString) in
+                if let errorString = errorString {
+                    self.showErrorAlert("Oops", message: errorString)
+                }
+            }
         }
     }
 
@@ -184,5 +184,6 @@ extension SettingsViewController: TextFieldCellDelegate, UnitsCellDelegate, Swit
     
     func switchValueChanged(value: Bool) {
         // TODO: Disable or ask for push notifications
+        
     }
 }

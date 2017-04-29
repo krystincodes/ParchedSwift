@@ -14,14 +14,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-//        let defaults = UserDefaults.standard
+        let defaults = UserDefaults.standard
 //        if defaults.bool(forKey: Constants.HasCompletedSetupKey) == false {
-//            UIApplication.shared.cancelAllLocalNotifications()
-//            let storyboard = UIStoryboard(name: "Walkthrough", bundle: nil)
-//            let vc = storyboard.instantiateInitialViewController()
-//            
-//            self.window?.rootViewController = vc
-//            self.window?.makeKeyAndVisible()
+            UIApplication.shared.cancelAllLocalNotifications()
+            let storyboard = UIStoryboard(name: "Walkthrough", bundle: nil)
+            let vc = storyboard.instantiateInitialViewController()
+            
+            self.window?.rootViewController = vc
+            self.window?.makeKeyAndVisible()
 //        }
         
         UIApplication.shared.applicationIconBadgeNumber = 0

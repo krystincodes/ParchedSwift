@@ -5,39 +5,81 @@
 import Foundation
 
 class MainViewModel {
-    var settingsViewModel: SettingsViewModel
+    var settings: SettingsViewModel
     
     var hasSetupDefaults: Bool {
-        return settingsViewModel.hasSetupDefaults
-    }
-
-    var startTimeString: String {
-        return settingsViewModel.startTime?.timeString ?? "Add"
+        return settings.hasSetupDefaults
     }
     
-    var endTimeString: String {
-        return settingsViewModel.endTime?.timeString ?? "Add"
+    var _consumedToday: Int = 0
+    var consumedToday: Int {
+        get {
+            return _consumedToday
+        } set {
+            _consumedToday = newValue
+            settings.userDefaults.set(newValue, forKey: Constants.ConsumedTodayKey)
+        }
     }
     
+    var percentComplete: Int {
+        return _consumedToday / settings.dailyGoal
+    }
+    
+    var refillTimeString: String? {
+        guard let timeUntilRefill = timeUntilRefill else { return nil }
+        
+        let minutes = (timeUntilRefill / 60).truncatingRemainder(dividingBy: 60)
+        let hours = (timeUntilRefill / 3600)
+        return "\(hours) hours, \(minutes) minutes"
+    }
     
     public init(settingsViewModel: SettingsViewModel) {
-        self.settingsViewModel = settingsViewModel
+        self.settings = settingsViewModel
+        self.consumedToday = settings.userDefaults.integer(forKey: Constants.ConsumedTodayKey)
     }
     
-    // MARK: UserDefaults methods
-//    func saveContainerSizeIfValid(_ containerSize: String) -> Bool {
-//        guard let containerSize = Int(containerSize) , containerSize > 0 else {
-//            showErrorAlert("", message: "Container size can't be 0. If you're drinking air, there's probably another app for that.")
-//            return false
-//        }
-//        
-//        let dailyAmount = defaultsManager.dailyAmount
-//        if dailyAmount > containerSize {
-//            defaultsManager.containerSize = containerSize
-//            return true
-//        } else {
-//            showErrorAlert("Oops", message: "Your container is larger than your daily amount. If I tried to do that math I'd crash. Try again.")
-//            return false
-//        }
-//    }
+    public func finishedContainer() {
+        let containerSize = settings.containerSize
+        consumedToday += containerSize
+        updateRefillTimes()
+    }
+    
+    public func updateRefillTimes() {
+        guard let startTime = settings.startTime,
+            let endTime = settings.endTime,
+            let timePerDrink = timeIntervalPerDrink() else { return }
+        
+        refillTimes = [Date]()
+        refillTimes!.append(startTime)
+        var start = startTime
+        while start < endTime {
+            start = start.addingTimeInterval(timePerDrink)
+            refillTimes!.append(start)
+            print("Adding refill time: \(start)")
+        }
+    }
+    
+    // MARK: Private functions
+    private var refillTimes: [Date]?
+    private var timeUntilRefill: TimeInterval? {
+        guard let refillTimes = refillTimes else {
+            // TODO: Log
+            return nil
+        }
+        let now = Date()
+        if let nextRefillTime = refillTimes.first( where: { $0 > now }) {
+            return nextRefillTime.timeIntervalSince(now)
+        }
+        return nil
+    }
+    
+    private func timeIntervalPerDrink() -> TimeInterval? {
+        if let startTime = settings.startTime, let endTime = settings.endTime {
+            let timeInDay = endTime.timeIntervalSince(startTime)
+            let numberOfBottles = round(Double(settings.dailyGoal - consumedToday / settings.containerSize))
+            let timePerBottle = Int(ceil(timeInDay / numberOfBottles))
+            return TimeInterval(timePerBottle)
+        }
+        return nil
+    }
 }

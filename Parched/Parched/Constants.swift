@@ -9,7 +9,7 @@ struct Constants {
     static let DailyGoalKey = "DailyGoal"
     static let ContainerSizeKey = "ContainerSize"
     static let StartedDayKey = "StartedDay"
-    static let DrankTodayKey = "DrankToday"
+    static let ConsumedTodayKey = "ConsumedToday"
     
     static let SnoozeActionIdentifier = "SnoozeAction"
     static let StartActionIdentifier = "StartAction"

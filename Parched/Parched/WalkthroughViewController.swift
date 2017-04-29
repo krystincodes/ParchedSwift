@@ -24,15 +24,17 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
     
     var currentSection = 0
     var amountMovedForKeyboard: CGFloat = 0.0
-    
+    var settingsViewModel: SettingsViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        settingsViewModel = SettingsViewModel()
+        
         startTimeTextField.inputView = startTimePicker
         endTimeTextField.inputView = endTimePicker
-        startTimeTextField.text = startTimeString
-        endTimeTextField.text = endTimeString
+        startTimeTextField.text = settingsViewModel?.startTimeString
+        endTimeTextField.text = settingsViewModel?.endTimeString
         
         unitOfMeasurementSegmentedControl.selectedSegmentIndex = 0
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -60,6 +62,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         proceedButton.layer.cornerRadius = proceedButton.frame.height / 3.5
     }
     
+    // TODO: Wtf is this? Make a custom TextField
     func setupTextFieldBorders() {
         let width = CGFloat(1)
 
@@ -145,38 +148,49 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
     // MARK: Actions
     @IBAction func unitsSegmentedControlValueChanged(_ sender: AnyObject) {
         let control = sender as! UISegmentedControl
-        saveUnitOfMesasurement(UnitOfMeasurement(rawValue: control.selectedSegmentIndex))
+        settingsViewModel?.unitOfMesaurement = control.selectedSegmentIndex
     }
     
     @IBAction func proceedButtonClicked(_ sender: AnyObject) {
         switch currentSection {
         case 0:
             moveLabelsForward()
-            break
         case 1:
-            if saveDailyAmountIfValid(dailyAmountTextField.text!) {
-                moveLabelsForward()
+            guard let text = dailyAmountTextField.text, let amount = Int(text) else { return }
+            settingsViewModel?.setDailyGoal(amount) { (errorString) in
+                if let error = errorString {
+                    self.showErrorAlert("Oops", message: error)
+                } else {
+                    self.moveLabelsForward()
+                }
             }
-            break
         case 2:
-            if saveContainerSizeIfValid(containerSizeTextField.text!) {
-                moveLabelsForward()
+            guard let text = containerSizeTextField.text, let size = Int(text) else { return }
+            settingsViewModel?.setContainerSize(size) { (errorString) in
+                if let error = errorString {
+                    self.showErrorAlert("Oops", message: error)
+                } else {
+                    self.moveLabelsForward()
+                }
             }
-            break
         case 3:
-            saveStartTime(startTimePicker.date)
-            saveEndTime(endTimePicker.date)
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateInitialViewController()
-            self.present(vc!, animated: true, completion: { () -> Void in
-                self.defaultsManager.hasCompletedSetup = true
-            })
+            settingsViewModel?.startTime = startTimePicker.date
+            settingsViewModel?.setEndTime(endTimePicker.date) { (errorString) in
+                if let error = errorString {
+                    self.showErrorAlert("Oops", message: error)
+                } else {
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    if let homeVc = storyboard.instantiateInitialViewController() {
+                        self.present(homeVc, animated: true, completion: nil)
+                    }
+                }
+            }
         default:
             break
         }
     }
     
     @IBAction func backgroundTapped(_ sender: AnyObject) {
-        self.view.endEditing(true)
+        view.endEditing(true)
     }
 }

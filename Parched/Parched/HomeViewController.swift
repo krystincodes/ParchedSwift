@@ -25,54 +25,42 @@ class HomeViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         let settingsViewModel = SettingsViewModel()
         viewModel = MainViewModel(settingsViewModel: settingsViewModel)
-        
-        setupNSNotifications()
-        updateAllInfo()
     }
     
-    // MARK: Private functions
-    
-    private func updateAllInfo() {
-        populateSettingsFromViewModel()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         updateProgressBarAndLabel()
-        resetTimer()
-    }
-    
-//    private func setupPickerViewForSettings() {
-//        let doneButtonView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 45))
-//        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneWithPickerTapped()))
-//        timePicker.inputView = doneButtonView
-//    }
-    
-    // TODO: Observables
-    private func populateSettingsFromViewModel() {
-//        dailyAmountTextField.text = String(viewModel.dailyAmount)
-//        containerSizeTextField.text = String(viewModel.containerSize)
-//        startTimeButton.titleLabel?.text = viewModel.startTimeString
-//        endTimeButton.titleLabel?.text = viewModel.startTimeString
-//        unitOfMeasurementSegmentedControl.selectedSegmentIndex = viewModel.unitOfMesaurement
+        updateCountdown()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let settingsVc = segue.destination as? SettingsViewController {
-            settingsVc.viewModel = viewModel.settingsViewModel
+            settingsVc.viewModel = viewModel.settings
         }
     }
     
-    @objc private func doneWithPickerTapped() {
-        
-    }
-    
-    private func setupNSNotifications() {
-        
-    }
-    
-    private func resetTimer() {
-        
+    // MARK: Private functions
+
+    private func updateCountdown() {
+        timeLeftLabel.text = viewModel.refillTimeString
+        Timer.init(fire: Date(), interval: 60, repeats: true, block: { (timer) in
+            self.timeLeftLabel.text = self.viewModel.refillTimeString
+        }).fire()
     }
     
     private func updateProgressBarAndLabel() {
+        let goal = viewModel.settings.dailyGoal
+        let consumed = viewModel.consumedToday
+        amountDrankTodayLabel.text = "\(consumed) / \(goal) \(String(describing: viewModel.settings.unitOfMesaurementString))"
         
+        let percentage = consumed / goal
+        let parentWidth = progressBarContainerView.frame.width
+        let constraintWidth = parentWidth - parentWidth * CGFloat(percentage)
+        progressBarRightConstraint.constant = constraintWidth
+        
+        UIView.animate(withDuration: 0.5) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     private func showAlert(title: String, message: String) {
@@ -89,7 +77,8 @@ class HomeViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func finishedEarlyTapped(_ sender: AnyObject) {
-        
+        viewModel.finishedContainer()
+        updateCountdown()
     }
 }
 
