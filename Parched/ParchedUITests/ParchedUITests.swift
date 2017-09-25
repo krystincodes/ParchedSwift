@@ -2,8 +2,8 @@
 //  ParchedUITests.swift
 //  ParchedUITests
 //
-//  Created by Krystin Stutesman on 9/17/16.
-//  Copyright © 2016 Krystin Stutesman. All rights reserved.
+//  Created by Ryan Stutesman on 9/17/16.
+//  Copyright © 2016 Ryan Stutesman. All rights reserved.
 //
 
 import XCTest

@@ -1,5 +1,5 @@
 //
-//  Copyright © 2017 Krystin Stutesman. All rights reserved.
+//  Copyright © 2017 Ryan Stutesman. All rights reserved.
 //
 
 import UIKit
@@ -142,7 +142,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     @objc private func nextTapped() {
         guard let row = showingInputForCellType?.rawValue else { return }
         
-        print("showingInputForCellType: \(showingInputForCellType)")
+        print("showingInputForCellType: \(String(describing: showingInputForCellType))")
         let nextRow = row + 1
         shouldShowInputForCellType = CellType(rawValue: nextRow)
         let currentIndex = IndexPath(row: row, section: 0)

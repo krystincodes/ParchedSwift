@@ -2,8 +2,8 @@
 //  WalkthroughViewController.swift
 //  Parched
 //
-//  Created by Krystin Stutesman on 9/17/16.
-//  Copyright © 2016 Krystin Stutesman. All rights reserved.
+//  Created by Ryan Stutesman on 9/17/16.
+//  Copyright © 2016 Ryan Stutesman. All rights reserved.
 //
 
 import UIKit
@@ -105,7 +105,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
     }
     
     // MARK: Keyboard
-    func keyboardWillShow(_ notification: Notification) {
+    @objc func keyboardWillShow(_ notification: Notification) {
         if let info = (notification as NSNotification).userInfo, let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue {
             let keyboardEndY = (info[UIKeyboardFrameBeginUserInfoKey] as AnyObject).cgRectValue.origin.y
             let proceedButtonBottom = proceedButton.frame.origin.y + proceedButton.frame.size.height;
@@ -123,7 +123,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         }
     }
     
-    func keyboardWillHide(_ notification: Notification) {
+    @objc func keyboardWillHide(_ notification: Notification) {
         guard amountMovedForKeyboard != 0  else {
             return
         }

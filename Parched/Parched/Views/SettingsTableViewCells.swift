@@ -1,5 +1,5 @@
 //
-//  Copyright © 2017 Krystin Stutesman. All rights reserved.
+//  Copyright © 2017 Ryan Stutesman. All rights reserved.
 //
 
 import UIKit

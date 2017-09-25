@@ -1,5 +1,5 @@
 //
-//  Copyright © 2016 Krystin Stutesman. All rights reserved.
+//  Copyright © 2016 Ryan Stutesman. All rights reserved.
 //
 
 struct Constants {
@@ -23,7 +23,6 @@ struct Constants {
     static let StartDayNotificationIdentifier = "StartDayNotification"
     static let FinishedNotificationIdentifier = "FinishedNotification"
     
-    static let AppGroupName = "group.com.krystinstutesman.ParchedTodayExtensionSharingDefaults"
     static let TimerKey = "TimerKey"
     
     static let PushNotificationAskKey = "HasAskedNotifications"
