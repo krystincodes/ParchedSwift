@@ -41,6 +41,19 @@ class HomeViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: Private functions
 
+    private func setupThemeColors() {
+        view.backgroundColor = Theme.primaryColor
+        timeLeftLabel.textColor = Theme.textColor
+        nextRefillLabel.textColor = Theme.textColor
+        amountDrankTodayLabel.textColor = Theme.textColor
+
+        finishedEarlyButton.tintColor = Theme.textColor
+        finishedEarlyButton.backgroundColor = Theme.secondaryColor
+        progressBarView.backgroundColor = Theme.secondaryColor
+        navigationItem.leftBarButtonItem?.tintColor = Theme.secondaryColor
+        navigationItem.rightBarButtonItem?.tintColor = Theme.secondaryColor
+    }
+    
     private func updateCountdown() {
         timeLeftLabel.text = viewModel.refillTimeString
         Timer.init(fire: Date(), interval: 60, repeats: true, block: { (timer) in

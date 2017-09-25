@@ -90,7 +90,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             cell.delegate = self
             
             // TODO: Get next button working properly
-//            cell.textField.inputAccessoryView = getToolbarForInputCell(cellType)
+            cell.textField.inputAccessoryView = getToolbarForInputCell(cellType)
             if cellType == .startTime || cellType == .endTime {
                 cell.textField.inputView = timePicker
             } else {
@@ -115,7 +115,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    private func getToolbarForInputCell(_ type: CellType) -> UIToolbar {
+    func getToolbarForInputCell(_ type: CellType) -> UIToolbar {
         let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 44))
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         
@@ -142,6 +142,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     @objc private func nextTapped() {
         guard let row = showingInputForCellType?.rawValue else { return }
         
+        print("showingInputForCellType: \(showingInputForCellType)")
         let nextRow = row + 1
         shouldShowInputForCellType = CellType(rawValue: nextRow)
         let currentIndex = IndexPath(row: row, section: 0)

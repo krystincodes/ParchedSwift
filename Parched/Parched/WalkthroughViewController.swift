@@ -53,55 +53,50 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         }) 
     }
     
-    override var prefersStatusBarHidden : Bool {
+    override var prefersStatusBarHidden: Bool {
         return true
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        proceedButton.layer.cornerRadius = proceedButton.frame.height / 3.5
-    }
-    
     // TODO: Wtf is this? Make a custom TextField
-    func setupTextFieldBorders() {
-        let width = CGFloat(1)
-
-        let dailyAmountBorder = CALayer()
-        dailyAmountBorder.borderColor = UIColor.white.cgColor
-        dailyAmountBorder.frame = CGRect(x: 0, y: dailyAmountTextField.frame.size.height - width, width:  dailyAmountTextField.frame.size.width, height: dailyAmountTextField.frame.height)
-        dailyAmountBorder.borderWidth = width
-        dailyAmountTextField.layer.addSublayer(dailyAmountBorder)
-        dailyAmountTextField.layer.masksToBounds = true
-     
-        let containerSizeBorder = CALayer()
-        containerSizeBorder.borderColor = UIColor.white.cgColor
-        containerSizeBorder.frame = CGRect(x: 0, y: containerSizeTextField.frame.size.height - width, width:  containerSizeTextField.frame.size.width, height: containerSizeTextField.frame.height)
-        containerSizeBorder.borderWidth = width
-        containerSizeTextField.layer.addSublayer(containerSizeBorder)
-        containerSizeTextField.layer.masksToBounds = true
-        
-        let startTimeBorder = CALayer()
-        startTimeBorder.borderColor = UIColor.white.cgColor
-        startTimeBorder.frame = CGRect(x: 0, y: startTimeTextField.frame.size.height - width, width:  startTimeTextField.frame.size.width, height: startTimeTextField.frame.height)
-        startTimeBorder.borderWidth = width
-        startTimeTextField.layer.addSublayer(startTimeBorder)
-        startTimeTextField.layer.masksToBounds = true
-        
-        
-        let endTimeBorder = CALayer()
-        endTimeBorder.borderColor = UIColor.white.cgColor
-        endTimeBorder.frame = CGRect(x: 0, y: endTimeTextField.frame.size.height - width, width:  endTimeTextField.frame.size.width, height: endTimeTextField.frame.height)
-        endTimeBorder.borderWidth = width
-        endTimeTextField.layer.addSublayer(endTimeBorder)
-        endTimeTextField.layer.masksToBounds = true
-    }
+//    func setupTextFieldBorders() {
+//        let width = CGFloat(1)
+//
+//        let dailyAmountBorder = CALayer()
+//        dailyAmountBorder.borderColor = UIColor.white.cgColor
+//        dailyAmountBorder.frame = CGRect(x: 0, y: dailyAmountTextField.frame.size.height - width, width:  dailyAmountTextField.frame.size.width, height: dailyAmountTextField.frame.height)
+//        dailyAmountBorder.borderWidth = width
+//        dailyAmountTextField.layer.addSublayer(dailyAmountBorder)
+//        dailyAmountTextField.layer.masksToBounds = true
+//     
+//        let containerSizeBorder = CALayer()
+//        containerSizeBorder.borderColor = UIColor.white.cgColor
+//        containerSizeBorder.frame = CGRect(x: 0, y: containerSizeTextField.frame.size.height - width, width:  containerSizeTextField.frame.size.width, height: containerSizeTextField.frame.height)
+//        containerSizeBorder.borderWidth = width
+//        containerSizeTextField.layer.addSublayer(containerSizeBorder)
+//        containerSizeTextField.layer.masksToBounds = true
+//        
+//        let startTimeBorder = CALayer()
+//        startTimeBorder.borderColor = UIColor.white.cgColor
+//        startTimeBorder.frame = CGRect(x: 0, y: startTimeTextField.frame.size.height - width, width:  startTimeTextField.frame.size.width, height: startTimeTextField.frame.height)
+//        startTimeBorder.borderWidth = width
+//        startTimeTextField.layer.addSublayer(startTimeBorder)
+//        startTimeTextField.layer.masksToBounds = true
+//        
+//        
+//        let endTimeBorder = CALayer()
+//        endTimeBorder.borderColor = UIColor.white.cgColor
+//        endTimeBorder.frame = CGRect(x: 0, y: endTimeTextField.frame.size.height - width, width:  endTimeTextField.frame.size.width, height: endTimeTextField.frame.height)
+//        endTimeBorder.borderWidth = width
+//        endTimeTextField.layer.addSublayer(endTimeBorder)
+//        endTimeTextField.layer.masksToBounds = true
+//    }
     
     func moveLabelsForward() {
         currentSection += 1
         if currentSection == 3 {
             proceedButton.titleLabel?.text = "Done"
         } else {
-             proceedButton.titleLabel?.text = "Next"
+             proceedButton.titleLabel?.text = "Continue"
         }
         descriptionLabelLeadingConstraint.constant -= descriptionLabel.frame.size.width + 40
         UIView.animate(withDuration: 0.3, animations: {
@@ -112,7 +107,6 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
     // MARK: Keyboard
     func keyboardWillShow(_ notification: Notification) {
         if let info = (notification as NSNotification).userInfo, let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue {
-//            let duration = (info[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).doubleValue
             let keyboardEndY = (info[UIKeyboardFrameBeginUserInfoKey] as AnyObject).cgRectValue.origin.y
             let proceedButtonBottom = proceedButton.frame.origin.y + proceedButton.frame.size.height;
             if keyboardEndY > proceedButtonBottom {
@@ -120,7 +114,6 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
             } else {
                 let needMoveUp = proceedButtonBottom - keyboardEndY + 10
                 amountMovedForKeyboard = needMoveUp
-//                view.layoutIfNeeded()
                 titleViewTopConstraint.constant -= needMoveUp
                 UIView.animate(withDuration: duration, animations: {
                     self.titleView.alpha = 0
@@ -155,6 +148,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
         switch currentSection {
         case 0:
             moveLabelsForward()
+            self.dailyAmountTextField.becomeFirstResponder()
         case 1:
             guard let text = dailyAmountTextField.text, let amount = Int(text) else { return }
             settingsViewModel?.setDailyGoal(amount) { (errorString) in
@@ -162,6 +156,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
                     self.showErrorAlert("Oops", message: error)
                 } else {
                     self.moveLabelsForward()
+                    self.containerSizeTextField.becomeFirstResponder()
                 }
             }
         case 2:
@@ -171,6 +166,7 @@ class WalkthroughViewController: BaseViewController, UITextFieldDelegate {
                     self.showErrorAlert("Oops", message: error)
                 } else {
                     self.moveLabelsForward()
+                    self.startTimeTextField.becomeFirstResponder()
                 }
             }
         case 3:
